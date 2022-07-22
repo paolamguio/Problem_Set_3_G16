@@ -272,12 +272,12 @@ house_mnz = house_mnz %>%
          (string=house_mnz$description ,
            pattern = paste0(b, "|", b1, "|", b2, "|", b3, "|", b4, "|", b5, "|", b6, "|", b7, "|", b8, "|", b9, "|", b10, "|", b11, "|", b12, "|", b13, "|", b14, "|", b15, "|", b16, "|", b17, "|", b18, "|", b19, "|", b20, "|", b21, "|", b22, "|", b23, "|", b24, "|", b25, "|", b26, "|", b27)))
 
-house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas , patterns = "," , replacement = ".")
-house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas , patterns = "habitaciones" , replacement = "")
-house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas , patterns = "alcoba" , replacement = ".")
-house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas , patterns = "alcobas" , replacement = "")
-house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas , patterns = "habitación" , replacement = ".")
-house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas , patterns = "habitacion" , replacement = "")
+# ajustes finales variable alcobas
+house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas, "[:punct:]" , replacement = ".")
+house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas, "[:alpha:]+[:digit:]" , replacement = "")
+house_mnz$alcobas <- str_replace_all (string=house_mnz$alcobas, "[:alpha:]" , replacement = "")
+
+house_mnz$alcobas <- as.numeric(house_mnz$alcobas)
 
 # baños
 c = "[:space:]+[:digit:]+[:space:]+baos" 
@@ -326,15 +326,16 @@ house_mnz = house_mnz %>%
          (string=house_mnz$description ,
            pattern = paste0(c, "|", c1, "|", c2, "|", c3, "|", c4, "|", c5, "|", c6, "|", c7, "|", c8, "|", c9, "|", c10, "|", c11, "|", c12, "|", c13, "|", c14, "|", c15, "|", c16, "|", c17, "|", c18, "|", c19, "|", c20, "|", c21, "|", c22, "|", c23, "|", c24, "|", c25, "|", c26, "|", c27, "|", c28, "|", c29, "|", c30, "|", c31, "|", c32, "|", c33, "|", c34, "|", c35, "|", c36, "|", c37, "|", c38, "|", c39)))
 
+# ajustes finales variable alcobas
+house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:punct:]" , replacement = ".")
+house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:alpha:]+[:digit:]" , replacement = "")
+house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:alpha:]" , replacement = "")
 
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "," , replacement = ".")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "baos" , replacement = "")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "bao" , replacement = ".")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "banio" , replacement = "")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "bano" , replacement = ".")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "banios" , replacement = "")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "banos" , replacement = ".")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "bañio" , replacement = "")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "bañios" , replacement = ".")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "baños" , replacement = "")
-house_mnz$baños <- str_replace_all (string=house_mnz$baños, patterns = "baño" , replacement = "")
+house_mnz$baños <- as.numeric(house_mnz$baños)
+
+# parqueaderos
+d = "[:space:]+[:digit:]+[:space:]+baos" 
+d1 = "[:space:]+[:digit:]+baos" 
+d2 = "[:space:]+[:alpha:]+[:space:]+baos"
+d3 = "[:space:]+[:alpha:]+baos" 
+
