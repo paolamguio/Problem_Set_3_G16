@@ -164,6 +164,22 @@ school_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
 
 leaflet() %>% addTiles() %>% addCircleMarkers(data=school_poblado , col="green1")
 
+# Chapinero - distancia al parque de la 93
+parkch = getbb(place_name = "Parque de la 93", 
+              featuretype = "amenity",
+              format_out = "sf_polygon")
+parkch %>% head()
+
+leaflet() %>% addTiles() %>% addPolygons(data=parkch , col="green")
+
+# Poblado - distancia a parque lleras
+parkp = getbb(place_name = "Parque Lleras", 
+             featuretype = "amenity",
+             format_out = "sf_polygon")
+parkp %>% head()
+
+leaflet() %>% addTiles() %>% addPolygons(data=parkp , col="green")
+
 ## creación de variables
 house_chapinero_mnz$dist_bar <- st_distance(x = house_chapinero_mnz, y = bar_chapinero)
 house_poblado_mnz$dist_bar <- st_distance(x = house_poblado_mnz, y = bar_poblado)
@@ -179,6 +195,9 @@ house_poblado_mnz$dist_restaurant <- st_distance(x = house_poblado_mnz, y = rest
 
 house_chapinero_mnz$dist_school <- st_distance(x = house_chapinero_mnz, y = school_chapinero)
 house_poblado_mnz$dist_school <- st_distance(x = house_poblado_mnz, y = school_poblado)
+
+house_chapinero_mnz$dist_parkch <- st_distance(x = house_chapinero_mnz, y = parkch)
+house_poblado_mnz$dist_parkp <- st_distance(x = house_poblado_mnz, y = parkp)
 
 house_chapinero_mnz <- house_chapinero_mnz %>% mutate(Neighborhood = "Chapinero")
 
@@ -326,7 +345,7 @@ house_mnz = house_mnz %>%
          (string=house_mnz$description ,
            pattern = paste0(c, "|", c1, "|", c2, "|", c3, "|", c4, "|", c5, "|", c6, "|", c7, "|", c8, "|", c9, "|", c10, "|", c11, "|", c12, "|", c13, "|", c14, "|", c15, "|", c16, "|", c17, "|", c18, "|", c19, "|", c20, "|", c21, "|", c22, "|", c23, "|", c24, "|", c25, "|", c26, "|", c27, "|", c28, "|", c29, "|", c30, "|", c31, "|", c32, "|", c33, "|", c34, "|", c35, "|", c36, "|", c37, "|", c38, "|", c39)))
 
-# ajustes finales variable alcobas
+# ajustes finales variable baños
 house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:punct:]" , replacement = ".")
 house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:alpha:]+[:digit:]" , replacement = "")
 house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:alpha:]" , replacement = "")
@@ -342,11 +361,72 @@ d4 = "garaje+[:space:]+[:digit:]"
 d5 = "garaje+[:space:]+[:alpha:]"
 d6 = "garaje+[:digit:]" 
 d7 = "garaje+[:alpha:]"
-d = "[:space:]+[:digit:]+[:space:]+garajes" 
-d1 = "[:space:]+[:digit:]+garajes" 
-d2 = "[:space:]+[:alpha:]+[:space:]+garajes"
-d3 = "[:space:]+[:alpha:]+garajes" 
-d4 = "garajes+[:space:]+[:digit:]" 
-d5 = "garajes+[:space:]+[:alpha:]"
-d6 = "garajes+[:digit:]" 
-d7 = "garajes+[:alpha:]"
+d8 = "[:space:]+[:digit:]+[:space:]+garajes" 
+d9 = "[:space:]+[:digit:]+garajes" 
+d10 = "[:space:]+[:alpha:]+[:space:]+garajes"
+d11 = "[:space:]+[:alpha:]+garajes" 
+d12 = "garajes+[:space:]+[:digit:]" 
+d13 = "garajes+[:space:]+[:alpha:]"
+d14 = "garajes+[:digit:]" 
+d15 = "garajes+[:alpha:]"
+d16 = "[:space:]+[:digit:]+[:space:]+parqueadero" 
+d17 = "[:space:]+[:digit:]+parqueadero" 
+d18 = "[:space:]+[:alpha:]+[:space:]+parqueadero"
+d19 = "[:space:]+[:alpha:]+parqueadero" 
+d20 = "parqueadero+[:space:]+[:digit:]" 
+d21 = "parqueadero+[:space:]+[:alpha:]"
+d22 = "parqueadero+[:digit:]" 
+d23 = "parqueadero+[:alpha:]"
+d24 = "[:space:]+[:digit:]+[:space:]+parqueaderos" 
+d25 = "[:space:]+[:digit:]+parqueaderos" 
+d26 = "[:space:]+[:alpha:]+[:space:]+parqueaderos"
+d27 = "[:space:]+[:alpha:]+parqueaderos" 
+d28 = "parqueaderos+[:space:]+[:digit:]" 
+d29 = "parqueaderos+[:space:]+[:alpha:]"
+d30 = "parqueaderos+[:digit:]" 
+d31 = "parqueaderos+[:alpha:]"
+d32 = "[:space:]+[:digit:]+[:space:]+parqeadero" 
+d33 = "[:space:]+[:digit:]+parqeadero" 
+d34 = "[:space:]+[:alpha:]+[:space:]+parqeadero"
+d35 = "[:space:]+[:alpha:]+parqeadero" 
+d36 = "parqeadero+[:space:]+[:digit:]" 
+d37 = "parqeadero+[:space:]+[:alpha:]"
+d38 = "parqeadero+[:digit:]" 
+d39 = "parqeadero+[:alpha:]"
+d40 = "[:space:]+[:digit:]+[:space:]+parqeaderos" 
+d41 = "[:space:]+[:digit:]+parqeaderos" 
+d42 = "[:space:]+[:alpha:]+[:space:]+parqeaderos"
+d43 = "[:space:]+[:alpha:]+parqeaderos" 
+d44 = "parqeaderos+[:space:]+[:digit:]" 
+d45 = "parqeaderos+[:space:]+[:alpha:]"
+d46 = "parqeaderos+[:digit:]" 
+d47 = "parqeaderos+[:alpha:]"
+
+house_mnz = house_mnz %>%
+  mutate(parqueadero = str_extract
+         (string=house_mnz$description ,
+           pattern = paste0(d, "|", d1, "|", d2, "|", d3, "|", d4, "|", d5, "|", d6, "|", d7, "|", d8, "|", d9, "|", d10, "|", d11, "|", d12, "|", d13, "|", d14, "|", d15, "|", d16, "|", d17, "|", d18, "|", d19, "|", d20, "|", d21, "|", d22, "|", d23, "|", d24, "|", d25, "|", d26, "|", d27, "|", d28, "|", d29, "|", d30, "|", d31, "|", d32, "|", d33, "|", d34, "|", d35, "|", d36, "|", d37, "|", d38, "|", d39, "|", d40, "|", d41, "|", d42, "|", d43, "|", d44, "|", d45, "|", d46, "|", d47)))
+
+# ajustes finales variable parqueadero
+house_mnz$parqueadero <- str_replace_all (string=house_mnz$parqueadero, "[:punct:]" , replacement = ".")
+house_mnz$parqueadero <- str_replace_all (string=house_mnz$parqueadero, "[:alpha:]+[:digit:]" , replacement = "")
+house_mnz$parqueadero <- str_replace_all (string=house_mnz$parqueadero, "[:alpha:]" , replacement = "")
+
+house_mnz$parqueadero <- as.numeric(house_mnz$parqueadero)
+
+###### Faltaría crear dummy de parqueadero
+
+# Variable dummy de ascensor  
+house_mnz = house_mnz %>%
+  mutate(ascensor = str_extract,
+         string=house_mnz$description,
+           ifelse(str_match(string = house_mnz$description , pattern = "ascensor", 1, 0)))
+ 
+house_mnz = house_mnz %>%
+  mutate(ascensor = ifelse(is.na(ascensor)==T,
+        (str_extract(str_match(string = house_mnz$description , pattern = "asensor", 1, ascensor))))
+
+
+                    
+
+
