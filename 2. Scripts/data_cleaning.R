@@ -334,8 +334,19 @@ house_mnz$baños <- str_replace_all (string=house_mnz$baños, "[:alpha:]" , repl
 house_mnz$baños <- as.numeric(house_mnz$baños)
 
 # parqueaderos
-d = "[:space:]+[:digit:]+[:space:]+baos" 
-d1 = "[:space:]+[:digit:]+baos" 
-d2 = "[:space:]+[:alpha:]+[:space:]+baos"
-d3 = "[:space:]+[:alpha:]+baos" 
-
+d = "[:space:]+[:digit:]+[:space:]+garaje" 
+d1 = "[:space:]+[:digit:]+garaje" 
+d2 = "[:space:]+[:alpha:]+[:space:]+garaje"
+d3 = "[:space:]+[:alpha:]+garaje" 
+d4 = "garaje+[:space:]+[:digit:]" 
+d5 = "garaje+[:space:]+[:alpha:]"
+d6 = "garaje+[:digit:]" 
+d7 = "garaje+[:alpha:]"
+d = "[:space:]+[:digit:]+[:space:]+garajes" 
+d1 = "[:space:]+[:digit:]+garajes" 
+d2 = "[:space:]+[:alpha:]+[:space:]+garajes"
+d3 = "[:space:]+[:alpha:]+garajes" 
+d4 = "garajes+[:space:]+[:digit:]" 
+d5 = "garajes+[:space:]+[:alpha:]"
+d6 = "garajes+[:digit:]" 
+d7 = "garajes+[:alpha:]"
