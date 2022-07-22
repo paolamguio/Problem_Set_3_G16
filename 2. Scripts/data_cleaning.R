@@ -196,8 +196,8 @@ house_poblado_mnz$dist_restaurant <- st_distance(x = house_poblado_mnz, y = rest
 house_chapinero_mnz$dist_school <- st_distance(x = house_chapinero_mnz, y = school_chapinero)
 house_poblado_mnz$dist_school <- st_distance(x = house_poblado_mnz, y = school_poblado)
 
-house_chapinero_mnz$dist_parkch <- st_distance(x = house_chapinero_mnz, y = parkch)
-house_poblado_mnz$dist_parkp <- st_distance(x = house_poblado_mnz, y = parkp)
+house_chapinero_mnz$dist_park <- st_distance(x = house_chapinero_mnz, y = parkch)
+house_poblado_mnz$dist_park <- st_distance(x = house_poblado_mnz, y = parkp)
 
 house_chapinero_mnz <- house_chapinero_mnz %>% mutate(Neighborhood = "Chapinero")
 
