@@ -1,7 +1,14 @@
+# Data Cleaning Base Training
+# Problem_Set_3
+# Grupo 16
+# Andres Martinez, Paola Morales y Oscar Cortes 
+--------------------------------------------------
+  
+## preparación del espacio
 rm(list = ls())
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
 
-setwd("C:/Users/andre/Downloads")
-
+## llamado librerías de la sesión
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -11,6 +18,7 @@ p_load(tidyverse,rio,
        osmdata,
        nngeo)
 
+###*** 1. llamado bases de datos ***###
 train <- import("train.Rds") %>% mutate(base="train")
 test <- import("test.Rds") %>% mutate(base="test")
 house <- bind_rows(train,test) %>% st_as_sf(coords=c("lon","lat"),crs=4326)
@@ -19,6 +27,7 @@ leaflet() %>% addTiles() %>% addCircles(data=house)
 
 str(house)
 
+###*** 2. Obtención polígonos de interes ***###
 chapinero <- getbb(place_name = "UPZ Chapinero, Bogota", 
                    featuretype = "boundary:administrative", 
                    format_out = "sf_polygon") %>% .$multipolygon
@@ -48,6 +57,8 @@ available_features()
 
 available_tags("amenity")
 
+###*** 3. Traigo base de datos con manzanas de las 2 localidades ***###
+
 mnz = import("mnz_urban.rds")
 
 sf_use_s2(FALSE)
@@ -74,18 +85,24 @@ table(is.na(house_poblado_mnz$COD_DANE_ANM))
 
 leaflet() %>% addTiles() %>% addCircles(data=house) %>% addPolygons(data = mnz, col = "red")
 
+###*** 4. Creación de variables con vecinos espaciales ***###
+
+## Identificación de amenity
+# Chapinero - distancia a bares
 bar_chapinero <- opq(bbox = st_bbox(mnz_chapinero)) %>%
   add_osm_feature(key = "amenity", value = "bar") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=bar_chapinero , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=bar_chapinero , col="black")
 
+# Poblado - distancia a bares
 bar_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
   add_osm_feature(key = "amenity", value = "bar") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=bar_poblado , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=bar_poblado , col="black")
 
+# Chapinero - distancia a estaciones de bus
 osm_chapinero <- opq(bbox = st_bbox(mnz_chapinero)) %>%
   add_osm_feature(key="amenity" , value="bus_station")
 
@@ -93,8 +110,9 @@ osm_sf_chapinero <- osm_chapinero %>% osmdata_sf()
 
 bus_station_chapinero <- osm_sf_chapinero$osm_points %>% select(osm_id,amenity)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=bus_station_chapinero , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=bus_station_chapinero , col="darkorange")
 
+# Poblado - distancia a estaciones de bus
 osm_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
   add_osm_feature(key="amenity" , value="bus_station")
 
@@ -102,44 +120,51 @@ osm_sf_poblado <- osm_poblado %>% osmdata_sf()
 
 bus_station_poblado <- osm_sf_poblado$osm_points %>% select(osm_id,amenity)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=bus_station_poblado , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=bus_station_poblado , col="darkorange")
 
+# Chapinero - distancia a bancos
 bank_chapinero <- opq(bbox = st_bbox(mnz_chapinero)) %>%
   add_osm_feature(key = "amenity", value = "bank") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=bank_chapinero , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=bank_chapinero , col="deeppink1")
 
+# Poblado - distancia a bancos
 bank_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
   add_osm_feature(key = "amenity", value = "bank") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=bank_poblado , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=bank_poblado , col="deeppink1")
 
+# Chapinero - distancia a restaurantes
 restaurant_chapinero <- opq(bbox = st_bbox(mnz_chapinero)) %>%
   add_osm_feature(key = "amenity", value = "restaurant") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=restaurant_chapinero , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=restaurant_chapinero , col="darkseagreen3")
 
+# Poblado - distancia a restaurantes
 restaurant_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
   add_osm_feature(key = "amenity", value = "restaurant") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=restaurant_poblado , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=restaurant_poblado , col="darkseagreen3")
 
+# Chapinero - distancia a escuelas
 school_chapinero <- opq(bbox = st_bbox(mnz_chapinero)) %>%
   add_osm_feature(key = "amenity", value = "school") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=school_chapinero , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=school_chapinero , col="green1")
 
+# Poblado - distancia a escuelas
 school_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
   add_osm_feature(key = "amenity", value = "school") %>%
   osmdata_sf() %>% .$osm_points %>% select(osm_id,name)
 
-leaflet() %>% addTiles() %>% addCircleMarkers(data=school_poblado , col="red")
+leaflet() %>% addTiles() %>% addCircleMarkers(data=school_poblado , col="green1")
 
+## creación de variables
 house_chapinero_mnz$dist_bar <- st_distance(x = house_chapinero_mnz, y = bar_chapinero)
 house_poblado_mnz$dist_bar <- st_distance(x = house_poblado_mnz, y = bar_poblado)
 
@@ -161,7 +186,7 @@ house_poblado_mnz <- house_poblado_mnz %>% mutate(Neighborhood = "Poblado")
 
 house_mnz <- rbind(house_chapinero_mnz, house_poblado_mnz)
 
-### *** Rescate de texto como variables *** ###
+###*** 5. Rescate de texto como variables ***###
 
 ## convierto el texto de description a minúscula
 str_to_lower(string = house_mnz$description)
