@@ -14,7 +14,7 @@ setwd("C:/Users/andre/Downloads")
 require(pacman)
 p_load(rio,tidyverse,sf)
 
-###*** 1. Rescate de texto como variables ***###
+###*** 1. Se descarga base de datos ***###
 
 ## censo data
 browseURL("https://microdatos.dane.gov.co//catalog/643/get_microdata")
