@@ -3,15 +3,20 @@
 # Problem_Set_3
 # Grupo 16
 # Andres Martinez, Paola Morales y Oscar Cortes 
---------------------------------------------------
+#--------------------------------------------------
 
 ## preparación del espacio
 rm(list = ls())
-setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
+setwd("C:/Users/ocaco/OneDrive/15. Maestria Economia/9. Big Data/3. GitHub/Problem_Set_3_G16/3. Stores")
+
 
 ## llamado librerías de la sesión
 require(pacman)
-p_load(rio,tidyverse,sf,leaflet,class,skimr, osmdata)
+p_load(
+  rio,tidyverse,
+  sf,leaflet,class,
+  skimr, osmdata
+  )
 
 ### 1. llamado bases de datos ###
 hogares <- import("train.Rds")
@@ -44,8 +49,8 @@ leaflet() %>% addTiles() %>% addPolygons(data=poblado , color="red") %>% addCirc
 ## 1.2. Traigo base de datos con manzanas de las 2 localidades
 
 
-parqueadero dummy 
-ascensor 
+#parqueadero dummy 
+#ascensor 
 
 ### *** Rescate de texto como variables *** ###
 
