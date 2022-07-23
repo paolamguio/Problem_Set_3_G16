@@ -1,10 +1,20 @@
-## install package
-rm(list=ls())
 
+# Inclusión de manzanas 
+# Problem_Set_3 
+# Grupo 16
+# Andres Martinez, Paola Morales y Oscar Cortes 
+--------------------------------------------------
+ 
+## preparación del espacio
+rm(list = ls())
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3-G16/3. Stores")
 setwd("C:/Users/andre/Downloads")
 
+## llamado librerías de la sesión
 require(pacman)
 p_load(rio,tidyverse,sf)
+
+###*** 1. Rescate de texto como variables ***###
 
 ## censo data
 browseURL("https://microdatos.dane.gov.co//catalog/643/get_microdata")
