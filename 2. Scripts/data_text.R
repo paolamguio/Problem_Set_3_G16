@@ -1,7 +1,15 @@
+
+# Data text
+# Problem_Set_3 
+# Grupo 16
+# Andres Martinez, Paola Morales y Oscar Cortes 
+--------------------------------------------------
+  
+## preparación del espacio
 rm(list = ls())
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3-G16/3. Stores")
 
-setwd("C:/Users/andre/Downloads")
-
+## llamado librerías de la sesión
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -11,9 +19,10 @@ p_load(tidyverse,rio,
        osmdata,
        nngeo)
 
+## se importan bases de datos 
 house_mnz <- import("house_mnz.rds")
 
-###*** 5. Rescate de texto como variables ***###
+###*** 1. Rescate de texto como variables ***###
 
 ## convierto el texto de description a minúscula
 str_to_lower(string = house_mnz$description)
@@ -222,27 +231,28 @@ house_mnz$parqueadero <- str_replace_all (string=house_mnz$parqueadero, "[:alpha
 
 house_mnz$parqueadero <- as.numeric(house_mnz$parqueadero)
 
+#dummy parqueadero
 house_mnz = house_mnz %>%
   mutate(parking = str_extract
          (string=house_mnz$description ,
-           pattern = "parqueadero|garaje"))
+           pattern = "parqueadero|garaje|parqeadero"))
 
 house_mnz <- house_mnz %>% mutate(parking = ifelse(is.na(parking) == T, 0, 1))
 
 table(house_mnz$parking)
 table(is.na(house_mnz$parqueadero))
 
-###### Faltaría crear dummy de parqueadero
-
 # Variable dummy de ascensor  
 house_mnz = house_mnz %>%
   mutate(ascensor = str_extract
          (string=house_mnz$description ,
-           pattern = "ascensor"))
+           pattern = "ascensor|asensor|acensor"))
 
 house_mnz <- house_mnz %>% mutate(ascensor = ifelse(is.na(ascensor) == T, 0, 1))
 
 table(house_mnz$ascensor)
+table(is.na(house_mnz$ascensor))
+
          
 table(is.na(house_mnz$rooms))
 
