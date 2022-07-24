@@ -7,6 +7,9 @@
   
 ## preparación del espacio
 rm(list = ls())
+
+setwd("C:/Users/andre/Downloads")
+
 setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
 
 ## llamado librerías de la sesión
@@ -21,7 +24,8 @@ p_load(tidyverse,
   pastecs,
   stargazer,
   PerformanceAnalytics,
-  naniar
+  naniar,
+  gtsummary
 )
 
 ##### Estadísticas descriptivas base train #####
@@ -31,6 +35,12 @@ df_hogares<- readRDS("df_house_mnz.rds")
 class(df_hogares)
 dim(df_hogares)
 colnames(df_hogares)
+
+st_geometry(df_hogares) = NULL
+
+df_hogares <- df_hogares %>% mutate(base_Neighborhood = paste0(base, " ", Neighborhood))
+
+table(df_hogares$base_Neighborhood)
 
 table(df_hogares$Neighborhood == "Poblado")
 
@@ -55,11 +65,6 @@ summary(df_trainCH)
 summary(df_trainP)
 summary(df_testCH)
 summary(df_testP)
-
-st_drop_geometry(df_trainCH)
-
-# estadísticas descriptivas variables de interes
-require(gtsummary) #llamado librería
 
 # estadísiticas descriptivas generales datos
 
@@ -95,18 +100,10 @@ write_xlsx(descriptivasp, "d_test_p.xlsx") # se exporta a excel tabla con las es
 
 # Tablas descriptivas
 
+df_hogares1 <- df_hogares %>% select(bedrooms, bathrooms, property_type, parking, ascensor, balcon, terraza, remodelado, estrato, base_Neighborhood)
+table1 <- tbl_summary(df_hogares1)
 
+table1
 
-df_trainCH1 <- st_set_geometry(df_trainCH, NULL)
-
-tbl_summary(df_trainCH, by= property_id, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
-
-df_trainCH1 <- df_trainCH %>% select(bedrooms, bathrooms, property_type, parking, ascensor, balcon, terraza, remodelado, estrato)
-table1 <- tbl_summary(df_trainCH1)
-
-tbl_summary(df_trainCH1, statistic = list, (all_continuous()~"{mean} ({sd})")) # generales
-tbl_summary(df_trainCH1, by= property_id, statistic = list ("parking, ascensor, balcon, terraza, remodelado, estrato" ~"{mean} ({sd})")) # por clasificación
-
-
-tbl_summary(df, by= Pobre, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
+tbl_summary(df_hogares1, by= base_Neighborhood, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
 
