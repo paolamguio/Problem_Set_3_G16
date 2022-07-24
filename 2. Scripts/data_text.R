@@ -7,7 +7,7 @@
   
 ## preparación del espacio
 rm(list = ls())
-setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3-G16/3. Stores")
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
 
 ## llamado librerías de la sesión
 require(pacman)
@@ -269,3 +269,32 @@ table(is.na(house_mnz[is.na(house_mnz$bathrooms) == T,]$baños))
 table(is.na(house_mnz$surface_covered))
 
 table(is.na(house_mnz[is.na(house_mnz$surface_covered) == T,]$area_total))
+
+
+### *** Imputación de valores con datos espaciales de los vecinos ***###
+
+## NA área total 
+house_mnz = house_mnz %>%  
+  mutate(surface_total = ifelse(is.na(surface_total)==T, 
+                              area_total,surface_total)) 
+
+# se imputan valores de los vecinos cercanos por mzn
+house_mnz = house_mnz %>%
+  group_by(MANZ_CCNCT) %>% 
+  mutate(surface_total=median(surface_total,na.rm=T)) 
+
+## NA baños
+house_mnz = house_mnz %>%  
+  mutate(bathrooms = ifelse(is.na(bathrooms)==T, 
+                                baños,bathrooms)) 
+
+
+table(is.na(house_mnz$bathrooms)) #teníamos 7324 NA
+
+# se imputan valores de los vecinos cercanos por mzn
+house_mnz = house_mnz %>%
+  group_by(MANZ_CCNCT) %>% 
+  mutate(bathrooms=median(bathrooms,na.rm=T)) 
+
+
+
