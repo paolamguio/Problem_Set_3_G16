@@ -1,7 +1,16 @@
-rm(list = ls())
 
+# Data Text
+# Problem_Set_3 
+# Grupo 16
+# Andres Martinez, Paola Morales y Oscar Cortes 
+--------------------------------------------------
+
+## preparación del espacio
+rm(list = ls())
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3-G16/3. Stores")
 setwd("C:/Users/andre/Downloads")
 
+## llamado librerías de la sesión  
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -11,7 +20,7 @@ p_load(tidyverse,rio,
        osmdata,
        nngeo)
 
-## se importan bases de datos 
+## se importan bases de datos con manzanas
 house_mnz <- import("house_mnz.rds")
 
 ###*** 1. Rescate de texto como variables ***###
@@ -331,6 +340,9 @@ house_mnz = house_mnz %>%
 table(is.na(house_mnz$bathrooms))
 
 table(is.na(house_mnz$med_VA1_ESTRATO))
+
+
+### *** Imputación de valores mediante buffer ***###
 
 leaflet() %>% addTiles() %>% addPolygons(data=house_mnz[1,] %>% st_buffer(dist = 0.0005))
 
