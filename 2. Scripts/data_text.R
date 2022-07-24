@@ -1,15 +1,7 @@
-
-# Data text
-# Problem_Set_3 
-# Grupo 16
-# Andres Martinez, Paola Morales y Oscar Cortes 
---------------------------------------------------
-  
-## preparación del espacio
 rm(list = ls())
-setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3-G16/3. Stores")
 
-## llamado librerías de la sesión
+setwd("C:/Users/andre/Downloads")
+
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -25,7 +17,10 @@ house_mnz <- import("house_mnz.rds")
 ###*** 1. Rescate de texto como variables ***###
 
 ## convierto el texto de description a minúscula
-str_to_lower(string = house_mnz$description)
+house_mnz$description <- str_to_lower(string = house_mnz$description)
+house_mnz$description <- iconv(house_mnz$description, from = "UTF-8", to = "ASCII//TRANSLIT")
+house_mnz$description <- str_replace_all(house_mnz$description, "[^[:alnum:]]", " ")
+house_mnz$description <- gsub("\\s+", " ", str_trim(house_mnz$description))
 
 ## Patrones para rescatar texto de la variable "description"
 # área de los inmuebles "area toral"
@@ -44,9 +39,9 @@ a11 = "[:space:]+[:digit:]+metros cuadrados"
 a12 = "[:space:]+[:digit:]+[:punct:]+[:digit:]+[:space:]+mts" 
 a13 = "[:space:]+[:digit:]+[:space:]+mts" 
 a14 = "[:space:]+[:digit:]+mts" 
-a15 = "[:space:]+[:digit:]+[:punct:]+[:digit:]+[:space:]+m^2" 
-a16 = "[:space:]+[:digit:]+[:space:]+m^2" 
-a17 = "[:space:]+[:digit:]+m^2" 
+a15 = "[:space:]+[:digit:]+[:punct:]+[:digit:]+[:space:]+m 2" 
+a16 = "[:space:]+[:digit:]+[:space:]+m 2" 
+a17 = "[:space:]+[:digit:]+m 2" 
 a18 = "[:space:]+[:digit:]+[:punct:]+[:digit:]+[:space:]+mtrs" 
 a19 = "[:space:]+[:digit:]+[:space:]+mtrs" 
 a20 = "[:space:]+[:digit:]+mtrs"
@@ -253,7 +248,34 @@ house_mnz <- house_mnz %>% mutate(ascensor = ifelse(is.na(ascensor) == T, 0, 1))
 table(house_mnz$ascensor)
 table(is.na(house_mnz$ascensor))
 
-         
+house_mnz = house_mnz %>%
+  mutate(balcon = str_extract
+         (string=house_mnz$description ,
+           pattern = "balcon|balcn"))
+
+house_mnz <- house_mnz %>% mutate(balcon = ifelse(is.na(balcon) == T, 0, 1))
+
+table(house_mnz$balcon)
+
+house_mnz = house_mnz %>%
+  mutate(terraza = str_extract
+         (string=house_mnz$description ,
+           pattern = "terraza"))
+
+house_mnz <- house_mnz %>% mutate(terraza = ifelse(is.na(terraza) == T, 0, 1))
+
+table(house_mnz$terraza)
+
+house_mnz = house_mnz %>%
+  mutate(remodelado = str_extract
+         (string=house_mnz$description ,
+           pattern = "remodelado"))
+
+house_mnz <- house_mnz %>% mutate(remodelado = ifelse(is.na(remodelado) == T, 0, 1))
+
+table(house_mnz$remodelado)
+
+
 table(is.na(house_mnz$rooms))
 
 table(is.na(house_mnz[is.na(house_mnz$rooms) == T,]$alcobas))
@@ -269,3 +291,143 @@ table(is.na(house_mnz[is.na(house_mnz$bathrooms) == T,]$baños))
 table(is.na(house_mnz$surface_covered))
 
 table(is.na(house_mnz[is.na(house_mnz$surface_covered) == T,]$area_total))
+
+
+### *** Imputación de valores con datos espaciales de los vecinos ***###
+
+## NA área total 
+house_mnz = house_mnz %>%  
+  mutate(surface_total = ifelse(is.na(surface_total)==T, 
+                                area_total,surface_total)) 
+
+# se imputan valores de los vecinos cercanos por mzn
+house_mnz = house_mnz %>%
+  group_by(COD_DANE_ANM) %>% 
+  mutate(surface_total_med=median(surface_total,na.rm=T)) 
+
+house_mnz = house_mnz %>%  
+  mutate(surface_total = ifelse(is.na(surface_total)==T, 
+                                surface_total_med,surface_total)) 
+
+table(is.na(house_mnz$surface_total))
+
+## NA baños
+house_mnz = house_mnz %>%  
+  mutate(bathrooms = ifelse(is.na(bathrooms)==T, 
+                            baños,bathrooms)) 
+
+
+table(is.na(house_mnz$bathrooms)) #teníamos 7324 NA
+
+# se imputan valores de los vecinos cercanos por mzn
+house_mnz = house_mnz %>%
+  group_by(COD_DANE_ANM) %>% 
+  mutate(bathrooms_med=median(bathrooms,na.rm=T)) 
+
+house_mnz = house_mnz %>%  
+  mutate(bathrooms = ifelse(is.na(bathrooms)==T, 
+                            bathrooms_med,bathrooms)) 
+
+table(is.na(house_mnz$bathrooms))
+
+table(is.na(house_mnz$med_VA1_ESTRATO))
+
+leaflet() %>% addTiles() %>% addPolygons(data=house_mnz[1,] %>% st_buffer(dist = 0.0005))
+
+buffer <- st_buffer(house_mnz, dist = 0.0005)
+
+leaflet() %>% addTiles() %>% addPolygons(data=buffer)
+
+buffer = st_join(buffer,house_mnz[,"med_VA1_ESTRATO"])
+
+st_geometry(buffer) = NULL
+
+buffer_med = buffer %>% group_by(property_id) %>% summarise(estrato_med=median(med_VA1_ESTRATO.y,na.rm=T))
+
+house_mnz = left_join(house_mnz,buffer_med,"property_id")
+
+house_mnz = house_mnz %>%  
+  mutate(estrato = ifelse(is.na(med_VA1_ESTRATO)==T, 
+                          estrato_med,med_VA1_ESTRATO)) 
+
+table(is.na(house_mnz$estrato))
+
+house_mnz2 <- house_mnz %>% select(c("property_id", "bathrooms", "surface_total", "estrato"))
+
+buffer2 <- st_buffer(house_mnz2, dist = 0.0005)
+
+buffer2 = st_join(buffer2,house_mnz2[, c("bathrooms", "surface_total", "estrato")])
+
+st_geometry(buffer2) = NULL
+
+buffer_med2 = buffer2 %>% group_by(property_id) %>% summarise(estrato_med2=median(estrato.y,na.rm=T),
+                                                              bathrooms_med2=median(bathrooms.y,na.rm=T),
+                                                              surface_total_med2=median(surface_total.y,na.rm=T))
+
+house_mnz = left_join(house_mnz,buffer_med2,"property_id")
+
+house_mnz = house_mnz %>%  
+  mutate(estrato = ifelse(is.na(estrato)==T, 
+                          estrato_med2,estrato),
+         bathrooms = ifelse(is.na(bathrooms)==T, 
+                          bathrooms_med2,bathrooms),
+         surface_total = ifelse(is.na(surface_total)==T, 
+                            surface_total_med2,surface_total)) 
+
+house_mnz3 <- house_mnz %>% select(c("property_id", "bathrooms", "surface_total", "estrato"))
+
+buffer3 <- st_buffer(house_mnz3, dist = 0.001)
+
+buffer3 = st_join(buffer3,house_mnz3[, c("bathrooms", "surface_total", "estrato")])
+
+st_geometry(buffer3) = NULL
+
+buffer_med3 = buffer3 %>% group_by(property_id) %>% summarise(estrato_med3=median(estrato.y,na.rm=T),
+                                                              bathrooms_med3=median(bathrooms.y,na.rm=T),
+                                                              surface_total_med3=median(surface_total.y,na.rm=T))
+
+house_mnz = left_join(house_mnz,buffer_med3,"property_id")
+
+house_mnz = house_mnz %>%  
+  mutate(estrato = ifelse(is.na(estrato)==T, 
+                          estrato_med3,estrato),
+         bathrooms = ifelse(is.na(bathrooms)==T, 
+                            bathrooms_med3,bathrooms),
+         surface_total = ifelse(is.na(surface_total)==T, 
+                                surface_total_med3,surface_total)) 
+
+house_mnz4 <- house_mnz %>% select(c("property_id", "bathrooms", "surface_total", "estrato"))
+
+buffer4 <- st_buffer(house_mnz4, dist = 0.002)
+
+buffer4 = st_join(buffer4,house_mnz4[, c("bathrooms", "surface_total", "estrato")])
+
+st_geometry(buffer4) = NULL
+
+buffer_med4 = buffer4 %>% group_by(property_id) %>% summarise(estrato_med4=median(estrato.y,na.rm=T),
+                                                              bathrooms_med4=median(bathrooms.y,na.rm=T),
+                                                              surface_total_med4=median(surface_total.y,na.rm=T))
+
+house_mnz = left_join(house_mnz,buffer_med4,"property_id")
+
+house_mnz = house_mnz %>%  
+  mutate(estrato = ifelse(is.na(estrato)==T, 
+                          estrato_med4,estrato),
+         bathrooms = ifelse(is.na(bathrooms)==T, 
+                            bathrooms_med4,bathrooms),
+         surface_total = ifelse(is.na(surface_total)==T, 
+                                surface_total_med4,surface_total)) 
+
+colnames(house_mnz)
+
+house_mnz <- house_mnz %>% select(c("property_id", "ad_type", "l1", "l2", "l3", "bedrooms", "bathrooms", "surface_total", "price", "currency", "property_type", "base", "dist_bar", "dist_bus_station", "dist_bank", "dist_restaurant", "dist_school", "dist_park", "dist_parks_total", "Neighborhood", "parking", "ascensor", "balcon", "terraza", "remodelado", "estrato"))
+
+table(house_mnz$base, is.na(house_mnz$bathrooms))
+table(house_mnz$base, is.na(house_mnz$surface_total))
+table(house_mnz$base, is.na(house_mnz$estrato))
+
+house_mnz <- house_mnz %>% subset(is.na(estrato) == F)
+
+table(house_mnz$base, is.na(house_mnz$estrato))
+
+export(house_mnz,"df_house_mnz.rds")
