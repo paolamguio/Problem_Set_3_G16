@@ -174,11 +174,10 @@ school_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
 
 leaflet() %>% addTiles() %>% addCircleMarkers(data=school_poblado , col="red")
 
-
 # Chapinero - distancia al parque de la 93
 parkch = getbb(place_name = "Parque de la 93", 
-                 featuretype = "amenity",
-                 format_out = "sf_polygon")
+               featuretype = "amenity",
+               format_out = "sf_polygon")
 parkch %>% head()
 
 leaflet() %>% addTiles() %>% addPolygons(data=parkch , col="green")
@@ -191,28 +190,61 @@ parkp %>% head()
 
 leaflet() %>% addTiles() %>% addPolygons(data=parkp , col="green")
 
-
 house_chapinero_mnz$dist_bar <- st_distance(x = house_chapinero_mnz, y = bar_chapinero)
 house_poblado_mnz$dist_bar <- st_distance(x = house_poblado_mnz, y = bar_poblado)
+
+house_chapinero_mnz$dist_bar = apply(house_chapinero_mnz$dist_bar , 1 , min)
+house_poblado_mnz$dist_bar = apply(house_poblado_mnz$dist_bar , 1 , min)
 
 house_chapinero_mnz$dist_bus_station <- st_distance(x = house_chapinero_mnz, y = bus_station_chapinero)
 house_poblado_mnz$dist_bus_station <- st_distance(x = house_poblado_mnz, y = bus_station_poblado)
 
+house_chapinero_mnz$dist_bus_station = apply(house_chapinero_mnz$dist_bus_station , 1 , min)
+house_poblado_mnz$dist_bus_station = apply(house_poblado_mnz$dist_bus_station , 1 , min)
+
 house_chapinero_mnz$dist_bank <- st_distance(x = house_chapinero_mnz, y = bank_chapinero)
 house_poblado_mnz$dist_bank <- st_distance(x = house_poblado_mnz, y = bank_poblado)
+
+house_chapinero_mnz$dist_bank = apply(house_chapinero_mnz$dist_bank , 1 , min)
+house_poblado_mnz$dist_bank = apply(house_poblado_mnz$dist_bank , 1 , min)
 
 house_chapinero_mnz$dist_restaurant <- st_distance(x = house_chapinero_mnz, y = restaurant_chapinero)
 house_poblado_mnz$dist_restaurant <- st_distance(x = house_poblado_mnz, y = restaurant_poblado)
 
+house_chapinero_mnz$dist_restaurant = apply(house_chapinero_mnz$dist_restaurant , 1 , min)
+house_poblado_mnz$dist_restaurant = apply(house_poblado_mnz$dist_restaurant , 1 , min)
+
 house_chapinero_mnz$dist_school <- st_distance(x = house_chapinero_mnz, y = school_chapinero)
 house_poblado_mnz$dist_school <- st_distance(x = house_poblado_mnz, y = school_poblado)
+
+house_chapinero_mnz$dist_school = apply(house_chapinero_mnz$dist_school , 1 , min)
+house_poblado_mnz$dist_school = apply(house_poblado_mnz$dist_school , 1 , min)
 
 house_chapinero_mnz$dist_park <- st_distance(x = house_chapinero_mnz, y = parkch)
 house_poblado_mnz$dist_park <- st_distance(x = house_poblado_mnz, y = parkp)
 
+house_chapinero_mnz$dist_park = apply(house_chapinero_mnz$dist_park , 1 , min)
+house_poblado_mnz$dist_park = apply(house_poblado_mnz$dist_park , 1 , min)
+
 house_chapinero_mnz <- house_chapinero_mnz %>% mutate(Neighborhood = "Chapinero")
 
 house_poblado_mnz <- house_poblado_mnz %>% mutate(Neighborhood = "Poblado")
+
+colnames(house_chapinero_mnz)
+
+colnames(house_poblado_mnz)
+
+str(house_chapinero_mnz)
+
+str(house_poblado_mnz)
+
+house_chapinero_mnz %>% head()
+
+house_poblado_mnz %>% head()
+
+house_chapinero_mnz$dist_bar %>% head()
+
+house_poblado_mnz$dist_bar %>% head()
 
 house_mnz <- rbind(house_chapinero_mnz, house_poblado_mnz)
 
