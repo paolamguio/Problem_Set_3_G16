@@ -9,7 +9,8 @@ p_load(tidyverse,rio,
        leaflet,
        tmaptools,
        osmdata,
-       nngeo)
+       nngeo,
+       rgeos)
 
 train <- import("train.Rds") %>% mutate(base="train")
 test <- import("test.Rds") %>% mutate(base="test")
@@ -190,6 +191,46 @@ parkp %>% head()
 
 leaflet() %>% addTiles() %>% addPolygons(data=parkp , col="green")
 
+parques_chapinero <- opq(bbox = st_bbox(mnz_chapinero)) %>%
+  add_osm_feature(key = "leisure", value = "park") %>%
+  osmdata_sf() %>% .$osm_polygons %>% select(osm_id,name)
+
+centroides_chapinero <- gCentroid(as(parques_chapinero$geometry, "Spatial"), byid = T)
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = parques_chapinero, col = "green",
+              opacity = 0.8, popup = parques_chapinero$name) %>%
+  addCircles(lng = centroides_chapinero$x, 
+             lat = centroides_chapinero$y, 
+             col = "red", opacity = 1, radius = 1)
+
+centroides_chapinero_sf <- st_as_sf(centroides_chapinero, coords = c("x", "y"))
+dist_matrix <- st_distance(x = house_chapinero_mnz, y = centroides_chapinero_sf)
+
+parques_poblado <- opq(bbox = st_bbox(mnz_poblado)) %>%
+  add_osm_feature(key = "leisure", value = "park") %>%
+  osmdata_sf() %>% .$osm_polygons %>% select(osm_id,name)
+
+centroides_poblado <- gCentroid(as(parques_poblado$geometry, "Spatial"), byid = T)
+
+leaflet() %>%
+  addTiles() %>%
+  addPolygons(data = parques_poblado, col = "green",
+              opacity = 0.8, popup = parques_poblado$name) %>%
+  addCircles(lng = centroides_poblado$x, 
+             lat = centroides_poblado$y, 
+             col = "red", opacity = 1, radius = 1)
+
+centroides_poblado_sf <- st_as_sf(centroides_poblado, coords = c("x", "y"))
+dist_matrix2 <- st_distance(x = house_poblado_mnz, y = centroides_poblado_sf)
+
+posicion <- apply(dist_matrix, 1, function(x) which(min(x) == x))
+areas <- st_area(parques_chapinero)
+
+posicion2 <- apply(dist_matrix2, 1, function(x) which(min(x) == x))
+areas2 <- st_area(parques_poblado)
+
 house_chapinero_mnz$dist_bar <- st_distance(x = house_chapinero_mnz, y = bar_chapinero)
 house_poblado_mnz$dist_bar <- st_distance(x = house_poblado_mnz, y = bar_poblado)
 
@@ -225,6 +266,12 @@ house_poblado_mnz$dist_park <- st_distance(x = house_poblado_mnz, y = parkp)
 
 house_chapinero_mnz$dist_park = apply(house_chapinero_mnz$dist_park , 1 , min)
 house_poblado_mnz$dist_park = apply(house_poblado_mnz$dist_park , 1 , min)
+
+house_chapinero_mnz$dist_parks_total <- apply(dist_matrix, 1, min)
+house_poblado_mnz$dist_parks_total <- apply(dist_matrix2, 1, min)
+
+house_chapinero_mnz$park_surface <- areas[posicion]
+house_poblado_mnz$park_surface <- areas2[posicion2]
 
 house_chapinero_mnz <- house_chapinero_mnz %>% mutate(Neighborhood = "Chapinero")
 
