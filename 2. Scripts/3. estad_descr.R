@@ -36,12 +36,28 @@ p_load(tidyverse,
 ##### Estadísticas descriptivas base train #####
 
 ## se importan bases de datos creada en 1.data_cleaning
-df_hogares<- readRDS("df_house_mnz.rds")
+df_hogares<- readRDS("df_house_mnz2.rds")
 class(df_hogares)
 dim(df_hogares)
 colnames(df_hogares)
 
+#ajustes en variable estrato
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "1.5" , replacement = "2")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "2.5" , replacement = "3")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "3.25" , replacement = "3")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "3.375" , replacement = "3")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "3.5" , replacement = "4")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "4.5" , replacement = "5")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "5.25" , replacement = "5")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "5.5" , replacement = "6")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "5.75" , replacement = "6")
+df_hogares$estrato <- str_replace_all (string= df_hogares$estrato , pattern = "5.875" , replacement = "6")
+
+df_hogares$estrato <- as.numeric(df_hogares$estrato)
+table(df_hogares$estrato)
+
 st_geometry(df_hogares) = NULL
+class(df_hogares)
 
 df_hogares <- df_hogares %>% mutate(base_Neighborhood = paste0(base, " ", Neighborhood))
 
@@ -49,7 +65,7 @@ table(df_hogares$base_Neighborhood)
 
 table(is.na(df_hogares$Neighborhood))
 
-# separación de base de datos
+# separación base de datos
 
 df_trainCH <- df_hogares %>% subset(base == "train" & Neighborhood == "Chapinero") 
 df_trainP <- df_hogares %>% subset(base == "train" & Neighborhood == "Poblado") 
@@ -78,16 +94,16 @@ descriptivastp <- descriptivastp %>% select(Estadisticas, everything())
 write_xlsx(descriptivastp, "d_train_p.xlsx")
 
 stat.desc(df_testCH)
-descriptivasch <- stat.desc(df_testCH) # se guardan las estadísticas descriptivas de todas las variables para luego exportarlas a un excel
-descriptivasch$Estadisticas <- row.names(descriptivasch) # se crea columna dentro del dataframe con el nombre de las filas 
-descriptivasch <- descriptivasch %>% select(Estadisticas, everything()) # se ubica la columna creada en la primera posición 
-write_xlsx(descriptivasch, "d_test_CH.xlsx") # se exporta a excel tabla con las estadísticas descriptivas
+descriptivasch <- stat.desc(df_testCH) 
+descriptivasch$Estadisticas <- row.names(descriptivasch) 
+descriptivasch <- descriptivasch %>% select(Estadisticas, everything())  
+write_xlsx(descriptivasch, "d_test_CH.xlsx") 
 
 stat.desc(df_testP)
-descriptivasp <- stat.desc(df_testP) # se guardan las estadísticas descriptivas de todas las variables para luego exportarlas a un excel
-descriptivasp$Estadisticas <- row.names(descriptivasp) # se crea columna dentro del dataframe con el nombre de las filas 
-descriptivasp <- descriptivasp %>% select(Estadisticas, everything()) # se ubica la columna creada en la primera posición 
-write_xlsx(descriptivasp, "d_test_p.xlsx") # se exporta a excel tabla con las estadísticas descriptivas
+descriptivasp <- stat.desc(df_testP)
+descriptivasp$Estadisticas <- row.names(descriptivasp)
+descriptivasp <- descriptivasp %>% select(Estadisticas, everything())
+write_xlsx(descriptivasp, "d_test_p.xlsx") 
 
 # Tablas descriptivas
 
@@ -99,14 +115,14 @@ table1
 tbl_summary(df_hogares1, by= base_Neighborhood, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
 
 # Gráficos
-p <- ggplot(df_testCH, aes(x = price)) +
+p <- ggplot(df_trainCH, aes(x = price)) +
   geom_histogram(fill = "darkblue", alpha = 0.4) +
   labs(x = "Valor de venta CH", y = "Cantidad") +
   scale_x_log10(labels = scales::dollar) +
   theme_bw()
 ggplotly(p)
 
-p <- ggplot(df_testP, aes(x = price)) +
+p <- ggplot(df_trainP, aes(x = price)) +
   geom_histogram(fill = "darkblue", alpha = 0.4) +
   labs(x = "Valor de venta P", y = "Cantidad") +
   scale_x_log10(labels = scales::dollar) +
@@ -114,7 +130,7 @@ p <- ggplot(df_testP, aes(x = price)) +
 ggplotly(p)
 
 #Relación entre distancia al parque más cercano y precio 
-p <- ggplot(df_testCH, aes(x = dist_park, y = price)) +
+p <- ggplot(df_trainCH, aes(x = dist_park, y = price)) +
   geom_point(col = "darkblue", alpha = 0.4) +
   labs(x = "Distancia al parque de la 93", 
        y = "Valor venta inmueble",
@@ -124,7 +140,7 @@ p <- ggplot(df_testCH, aes(x = dist_park, y = price)) +
   theme_bw()
 ggplotly(p) 
 
-p <- ggplot(df_testP, aes(x = dist_park, y = price)) +
+p <- ggplot(df_trainP, aes(x = dist_park, y = price)) +
   geom_point(col = "darkblue", alpha = 0.4) +
   labs(x = "Distancia al parque Lleras", 
        y = "Valor venta inmueble",
