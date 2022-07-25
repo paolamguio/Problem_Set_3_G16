@@ -32,6 +32,9 @@ p_load(tidyverse,
 
 ## se importan bases de datos creada en 1.data_cleaning
 df_hogares<- readRDS("df_house_mnz.rds")
+
+df_hogares<- readRDS("df_house_mnz2.rds")
+
 class(df_hogares)
 dim(df_hogares)
 colnames(df_hogares)
@@ -41,6 +44,8 @@ st_geometry(df_hogares) = NULL
 df_hogares <- df_hogares %>% mutate(base_Neighborhood = paste0(base, " ", Neighborhood))
 
 table(df_hogares$base_Neighborhood)
+
+df_hogares$estrato <- as.factor(df_hogares$estrato)
 
 table(df_hogares$Neighborhood == "Poblado")
 
