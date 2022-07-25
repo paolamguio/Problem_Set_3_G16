@@ -1,16 +1,7 @@
-
-# Data Text
-# Problem_Set_3 
-# Grupo 16
-# Andres Martinez, Paola Morales y Oscar Cortes 
---------------------------------------------------
-
-## preparación del espacio
 rm(list = ls())
-setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3-G16/3. Stores")
+
 setwd("C:/Users/andre/Downloads")
 
-## llamado librerías de la sesión  
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -20,8 +11,10 @@ p_load(tidyverse,rio,
        osmdata,
        nngeo)
 
-## se importan bases de datos con manzanas
+## se importan bases de datos 
 house_mnz <- import("house_mnz.rds")
+
+house_mnz <- import("house_mnz2.rds")
 
 ###*** 1. Rescate de texto como variables ***###
 
@@ -341,9 +334,6 @@ table(is.na(house_mnz$bathrooms))
 
 table(is.na(house_mnz$med_VA1_ESTRATO))
 
-
-### *** Imputación de valores mediante buffer ***###
-
 leaflet() %>% addTiles() %>% addPolygons(data=house_mnz[1,] %>% st_buffer(dist = 0.0005))
 
 buffer <- st_buffer(house_mnz, dist = 0.0005)
@@ -442,4 +432,4 @@ house_mnz <- house_mnz %>% subset(is.na(estrato) == F)
 
 table(house_mnz$base, is.na(house_mnz$estrato))
 
-export(house_mnz,"df_house_mnz.rds")
+export(house_mnz,"df_house_mnz2.rds")
