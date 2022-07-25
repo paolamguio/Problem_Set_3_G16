@@ -9,7 +9,6 @@
 rm(list = ls())
 
 setwd("C:/Users/andre/Downloads")
-
 setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
 
 ## llamado librerías de la sesión
@@ -25,7 +24,13 @@ p_load(tidyverse,
   stargazer,
   PerformanceAnalytics,
   naniar,
-  gtsummary
+  gtsummary,
+  stringr,
+  rgeos, 
+  plotly, 
+  leaflet, 
+  tmaptools,
+  osmdata
 )
 
 ##### Estadísticas descriptivas base train #####
@@ -42,15 +47,7 @@ df_hogares <- df_hogares %>% mutate(base_Neighborhood = paste0(base, " ", Neighb
 
 table(df_hogares$base_Neighborhood)
 
-table(df_hogares$Neighborhood == "Poblado")
-
-sum(df_hogares$Neighborhood)
-
 table(is.na(df_hogares$Neighborhood))
-
-summary(is.na(df_hogares$Neighborhood==T))
-        
-df_hogares$Neighborhood
 
 # separación de base de datos
 
@@ -92,18 +89,48 @@ descriptivasp$Estadisticas <- row.names(descriptivasp) # se crea columna dentro 
 descriptivasp <- descriptivasp %>% select(Estadisticas, everything()) # se ubica la columna creada en la primera posición 
 write_xlsx(descriptivasp, "d_test_p.xlsx") # se exporta a excel tabla con las estadísticas descriptivas
 
-
-
-
-
-
-
 # Tablas descriptivas
 
-df_hogares1 <- df_hogares %>% select(bedrooms, bathrooms, property_type, parking, ascensor, balcon, terraza, remodelado, estrato, base_Neighborhood)
+df_hogares1 <- df_hogares %>% select(bedrooms, bathrooms, surface_total, price, property_type, dist_bar, dist_bus_station, dist_bank, dist_restaurant, dist_school, dist_park, parking, ascensor, balcon, terraza, remodelado, estrato, base_Neighborhood)
 table1 <- tbl_summary(df_hogares1)
 
 table1
 
 tbl_summary(df_hogares1, by= base_Neighborhood, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
+
+# Gráficos
+p <- ggplot(df_testCH, aes(x = price)) +
+  geom_histogram(fill = "darkblue", alpha = 0.4) +
+  labs(x = "Valor de venta CH", y = "Cantidad") +
+  scale_x_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p)
+
+p <- ggplot(df_testP, aes(x = price)) +
+  geom_histogram(fill = "darkblue", alpha = 0.4) +
+  labs(x = "Valor de venta P", y = "Cantidad") +
+  scale_x_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p)
+
+#Relación entre distancia al parque más cercano y precio 
+p <- ggplot(df_testCH, aes(x = dist_park, y = price)) +
+  geom_point(col = "darkblue", alpha = 0.4) +
+  labs(x = "Distancia al parque de la 93", 
+       y = "Valor venta inmueble",
+       title = "Relación entre distancia al parque de la 93 y el valor del inmueble") +
+  scale_x_log10() +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p) 
+
+p <- ggplot(df_testP, aes(x = dist_park, y = price)) +
+  geom_point(col = "darkblue", alpha = 0.4) +
+  labs(x = "Distancia al parque Lleras", 
+       y = "Valor venta inmueble",
+       title = "Relación entre distancia al parque Lleras y el valor del inmueble") +
+  scale_x_log10() +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p)
 
