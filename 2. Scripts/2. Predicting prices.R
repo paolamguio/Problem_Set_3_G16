@@ -58,9 +58,9 @@ predict <- stats::predict
 
 colnames(hogares)
 
-model1 <- as.formula("price ~ bedrooms + bathrooms + surface_total + property_type + 
+model1 <- as.formula("price ~ bedrooms + bathrooms + surface_total + factor(property_type) + 
                      dist_bar + dist_bus_station + dist_school + dist_park + dist_parks_total + 
-                     Neighborhood + parking + ascensor + balcon + terraza + remodelado + estrato")
+                     Neighborhood + parking + ascensor + balcon + terraza + remodelado + factor(estrato)")
 
 
 ctrl<- trainControl(method = "cv",
@@ -170,10 +170,10 @@ predxgboost1<-predict(xgboost1,testing)
 
 ## 6. Modelo Superlernear - datos de entrenamiento ###
 
-variablesX <- data.frame(training$bedrooms,training$bathrooms,training$surface_total,training$property_type,
+variablesX <- data.frame(training$bedrooms,training$bathrooms,training$surface_total,factor(training$property_type),
                          training$dist_bar,training$dist_bus_station,training$dist_school,training$dist_park,
-                         training$dist_parks_total,training$Neighborhood,training$parking,training$ascensor,
-                         training$balcon,training$balcon,training$terraza,training$remodelado,training$estrato)
+                         training$dist_parks_total,factor(training$Neighborhood),factor(training$parking),factor(training$ascensor),
+                         factor(training$balcon),factor(training$balcon),factor(training$terraza),factor(training$remodelado),factor(training$estrato))
 
 folds=5
 index <- split(1:1000,1:folds)
@@ -181,7 +181,7 @@ precio<-training$price
 length(training$price)
 length(hogares$bedrooms)
 superLearner1 <- SuperLearner(Y=precio, X=variablesX,
-                              SL.library=c("SL.lm", "SL.ranger", "SL.xgboost"),
+                              SL.library=c("SL.lm", "SL.glmnet", "SL.ranger", "SL.xgboost"),
                               method = "method.NNLS", cvControl=list(V=folds, validRows=index))
 superLearner1
 
