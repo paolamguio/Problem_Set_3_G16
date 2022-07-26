@@ -1,7 +1,15 @@
+
+# Data Cleaning Base Training
+# Problem_Set_3
+# Grupo 16
+# Andres Martinez, Paola Morales y Oscar Cortes 
+--------------------------------------------------
+  
+## preparación del espacio
 rm(list = ls())
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
 
-setwd("C:/Users/andre/Downloads")
-
+## llamado librerías de la sesión
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -12,6 +20,7 @@ p_load(tidyverse,rio,
        nngeo,
        rgeos)
 
+### 1. llamado bases de datos ###
 train <- import("train.Rds") %>% mutate(base="train")
 test <- import("test.Rds") %>% mutate(base="test")
 house <- bind_rows(train,test) %>% st_as_sf(coords=c("lon","lat"),crs=4326)
@@ -20,6 +29,7 @@ leaflet() %>% addTiles() %>% addCircles(data=house)
 
 str(house)
 
+# se defínen las zonas a analizar 
 chapinero <- getbb(place_name = "UPZ Chapinero, Bogota", 
                    featuretype = "boundary:administrative", 
                    format_out = "sf_polygon") %>% .$multipolygon
@@ -63,7 +73,8 @@ available_features()
 
 available_tags("amenity")
 
-mnz = import("mnz_urban.rds")
+mnz = import("mnz_urban.rds") ####
+mnz = import("house_mnz2.rds")
 
 sf_use_s2(FALSE)
 

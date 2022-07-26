@@ -119,6 +119,8 @@ table1
 tbl_summary(df_hogares1, by= base_Neighborhood, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
 
 # Gráficos por localidad 
+
+# Precios de venta de viviendad en chapinero
 p <- ggplot(df_trainCH, aes(x = price)) +
   geom_histogram(fill = "darkblue", alpha = 0.4) +
   labs(x = "Valor de venta CH", y = "Cantidad") +
@@ -126,13 +128,13 @@ p <- ggplot(df_trainCH, aes(x = price)) +
   theme_bw()
 ggplotly(p)
 
+# Precios de venta de viviendad en El Poblado
 p1 <- ggplot(df_trainP, aes(x = price)) +
   geom_histogram(fill = "darkblue", alpha = 0.4) +
   labs(x = "Valor de venta P", y = "Cantidad") +
   scale_x_log10(labels = scales::dollar) +
   theme_bw()
 ggplotly(p1)
-
 
 #Relación entre distancia al parque más cercano y precio 
 p2 <- ggplot(df_trainCH, aes(x = dist_park, y = price)) +
@@ -198,3 +200,22 @@ p8 <- ggplot(df_train, aes(x = bedrooms, y = price, color=Neighborhood)) +
   theme_bw()
 ggplotly(p8)
 
+df_train$surface_total <- str_replace_all (string= df_train$surface_total , pattern = "108800" , replacement = "108")
+
+p9 <- ggplot(df_train, aes(x = surface_total, y = price, color=Neighborhood)) +
+  geom_point()+
+  labs(x = "Área total", 
+       y = "Valor venta inmueble",
+       title = "Relación entre área y valor del inmueble") +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p9)
+
+p10 <- ggplot(df_train, aes(x = dist_park, y = price, color=Neighborhood)) +
+  geom_point()+
+  labs(x = "Distancia a parques", 
+       y = "Valor venta inmueble",
+       title = "Relación entre distancia a parques y valor del inmueble") +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p10)
