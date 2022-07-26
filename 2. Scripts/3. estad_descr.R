@@ -73,6 +73,10 @@ df_trainP <- df_hogares %>% subset(base == "train" & Neighborhood == "Poblado")
 df_testCH <- df_hogares %>% subset(base == "test" & Neighborhood == "Chapinero") 
 df_testP <- df_hogares %>% subset(base == "test" & Neighborhood == "Poblado") 
 
+
+df_train <- df_hogares %>% subset(base == "train") 
+
+
 ### 1. estadísticas descriptivas ###
 summary(df_trainCH)
 summary(df_trainP)
@@ -114,7 +118,7 @@ table1
 
 tbl_summary(df_hogares1, by= base_Neighborhood, statistic = list (all_continuous()~"{mean} ({sd})")) # por clasificación
 
-# Gráficos
+# Gráficos por localidad 
 p <- ggplot(df_trainCH, aes(x = price)) +
   geom_histogram(fill = "darkblue", alpha = 0.4) +
   labs(x = "Valor de venta CH", y = "Cantidad") +
@@ -122,15 +126,16 @@ p <- ggplot(df_trainCH, aes(x = price)) +
   theme_bw()
 ggplotly(p)
 
-p <- ggplot(df_trainP, aes(x = price)) +
+p1 <- ggplot(df_trainP, aes(x = price)) +
   geom_histogram(fill = "darkblue", alpha = 0.4) +
   labs(x = "Valor de venta P", y = "Cantidad") +
   scale_x_log10(labels = scales::dollar) +
   theme_bw()
-ggplotly(p)
+ggplotly(p1)
+
 
 #Relación entre distancia al parque más cercano y precio 
-p <- ggplot(df_trainCH, aes(x = dist_park, y = price)) +
+p2 <- ggplot(df_trainCH, aes(x = dist_park, y = price)) +
   geom_point(col = "darkblue", alpha = 0.4) +
   labs(x = "Distancia al parque de la 93", 
        y = "Valor venta inmueble",
@@ -138,9 +143,9 @@ p <- ggplot(df_trainCH, aes(x = dist_park, y = price)) +
   scale_x_log10() +
   scale_y_log10(labels = scales::dollar) +
   theme_bw()
-ggplotly(p) 
+ggplotly(p2) 
 
-p <- ggplot(df_trainP, aes(x = dist_park, y = price)) +
+p3 <- ggplot(df_trainP, aes(x = dist_park, y = price)) +
   geom_point(col = "darkblue", alpha = 0.4) +
   labs(x = "Distancia al parque Lleras", 
        y = "Valor venta inmueble",
@@ -148,5 +153,48 @@ p <- ggplot(df_trainP, aes(x = dist_park, y = price)) +
   scale_x_log10() +
   scale_y_log10(labels = scales::dollar) +
   theme_bw()
-ggplotly(p)
+ggplotly(p3)
+
+
+#Gráficas entre chapinero y poblado - base train
+p4 <- ggplot(df_train, aes(x = dist_park, y = price, color=Neighborhood)) +
+  geom_point()
+ggplotly(p4)
+
+
+p5 <- ggplot(df_train, aes(x = estrato, y = price, color=Neighborhood)) +
+  geom_point()+
+  labs(x = "Estrato", 
+       y = "Valor venta inmueble",
+       title = "Relación entre estrato y valor del inmueble") +
+   scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p5)
+ 
+p6 <- ggplot(df_train, aes(x = dist_bus_station, y = price, color=Neighborhood)) +
+  geom_point()+
+  labs(x = "Distancia a estación de bus", 
+       y = "Valor venta inmueble",
+       title = "Relación distancia a servicio de transporte y valor del inmueble") +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p6)
+
+p7 <- ggplot(df_train, aes(x = property_type, y = price, color=Neighborhood)) +
+  geom_point()+
+  labs(x = "Tipo de inmueble", 
+       y = "Valor venta inmueble",
+       title = "Relación tipo y valor del inmueble") +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p7)
+
+p8 <- ggplot(df_train, aes(x = bedrooms, y = price, color=Neighborhood)) +
+  geom_point()+
+  labs(x = "No. Habitaciones", 
+       y = "Valor venta inmueble",
+       title = "Relación entre habitaciones y valor del inmueble") +
+  scale_y_log10(labels = scales::dollar) +
+  theme_bw()
+ggplotly(p8)
 
