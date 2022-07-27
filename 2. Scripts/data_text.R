@@ -1,7 +1,17 @@
+
+# Estadísticas descriptivas
+# Problem_Set_3 
+# Grupo 16
+# Andres Martinez, Paola Morales y Oscar Cortes 
+--------------------------------------------------
+  
+## preparación del espacio
 rm(list = ls())
 
 setwd("C:/Users/andre/Downloads")
+setwd("C:/Users/amorales/OneDrive - ANI/Documentos/GitHub/Problem_Set_3_G16/3. Stores")
 
+## llamado librerías de la sesión
 require(pacman)
 
 p_load(tidyverse,rio,
@@ -276,7 +286,6 @@ house_mnz = house_mnz %>%
 house_mnz <- house_mnz %>% mutate(remodelado = ifelse(is.na(remodelado) == T, 0, 1))
 
 table(house_mnz$remodelado)
-
 
 table(is.na(house_mnz$rooms))
 
