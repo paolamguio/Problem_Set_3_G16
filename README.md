@@ -19,13 +19,9 @@ document: Contiene el documento final del problem set
 scripts: Contiene los scripts
 
 1_data_cleaning: Este script contiene el proceso para limpiar la base de datos de test y train
-
 2_data_text:  Este script contiene el proceso de rescate de texto como variables y el proceso de imputación de valores con datos espaciales de los vecinos
-
 3_data_squares: Este script contiene el proceso de la inclusiíon de las manzanas obtenidas en la página web del DANE en las áreas de análisis
-
 4_estad_descr: Este script contiene las estadísticas descriptivas de las bases de test y train para El Poblado y Chapinero, así como unas gráficas.
-
 5_predicting_prices: Este script contiene el proceso de predicción del precio de venta de las viviendas
 
 
