@@ -58,9 +58,9 @@ predict <- stats::predict
 
 colnames(hogares)
 
-model1 <- as.formula("price ~ bedrooms + bathrooms + surface_total + factor(property_type) + 
+model1 <- as.formula("price ~ bedrooms + bathrooms + surface_total + property_type + 
                      dist_bar + dist_bus_station + dist_school + dist_park + dist_parks_total + 
-                     Neighborhood + parking + ascensor + balcon + terraza + remodelado + factor(estrato)")
+                     Neighborhood + parking + ascensor + balcon + terraza + remodelado + estrato")
 
 
 ctrl<- trainControl(method = "cv",
@@ -162,6 +162,7 @@ xgboost1 <- train(
   trControl = ctrl,
   na.action  = na.pass,
   tuneGrid = grid_default,
+  metric = "RMSE",
   preProcess = c("center", "scale")
 )
   xgboost1
@@ -217,3 +218,7 @@ tabla[5,2]<-eval$RMSE
 stargazer(tabla, type = "text")
 tabla<-as.data.frame(tabla)
 write_xlsx(tabla,"tabla_precio.xlsx")
+
+hogares <- readRDS("df_house_mnz2.rds")
+
+hogares <- hogares %>% subset(base == "así")
